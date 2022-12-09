@@ -1,0 +1,98 @@
+# Logistic Regression
+
+
+## Upload dataset
+
+from google.colab import files
+
+uploaded = files.upload()
+
+for fn in uploaded.keys():
+  print('User uploaded file "{name}" with length {length} bytes'.format(
+      name=fn, length=len(uploaded[fn])))
+
+## Importing Libraries
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+## Loading dataset
+
+ds=pd.read_csv("fetal_health_logistic.csv")
+print("Shape of dataset : ",ds.shape)
+print("Dataset :-\n",ds.head())
+
+## Count of each class in Target 
+
+count=ds['fetal_health'].value_counts()
+print("Count of each class in Target :-\n",count)
+
+## Assigning X and y values
+
+X=ds.iloc[:,:-1].values
+print("X Shape is : ",X.shape)
+print("X is :-\n",X);
+
+y=ds.iloc[:,-1].values
+print("y Shape is : ",y.shape)
+print("y is :-\n",y)
+
+## Splitting the dataset into Train set and Test set
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 50)
+
+print("Shape of X_train is : ",X_train.shape)
+print("X_train is :-\n",X_train)
+
+print("Shape of y_train is : ",y_train.shape)
+print("y_train is :-\n",y_train)
+
+print("Shape of X_test is : ",X_test.shape)
+print("X_test is :-\n",X_test)
+
+print("Shape of y_test is : ",y_test.shape)
+print("y_test is :-\n",y_test)
+
+## Feature Scaling
+
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
+
+print("Now X_train is :-\n",X_train)
+
+print("Now X_test is :-\n",X_test)
+
+## Training Logistic Regression model on the Train set
+
+
+from sklearn.linear_model import LogisticRegression
+classifier = LogisticRegression()
+classifier.fit(X_train, y_train)
+
+## Predicting the Test set results
+
+y_pred = classifier.predict(X_test)
+print("Predicted vs Actual on Test set")
+print(np.concatenate((y_pred.reshape(len(y_pred),1), y_test.reshape(len(y_test),1)),1))
+
+## Making the Confusion Matrix
+
+from sklearn.metrics import confusion_matrix, accuracy_score
+cm = confusion_matrix(y_test, y_pred)
+print("Confusion Matrix is :-\n",cm)
+
+## Graphical Confusion Matrix display
+
+from sklearn.metrics import ConfusionMatrixDisplay
+ConfusionMatrixDisplay(cm).plot()
+plt.show()
+
+## Accuracy of the Logistic Model
+
+from sklearn.metrics import accuracy_score
+#print("Accuracy : ",accuracy_score(y_test,y_pred))
+print("Accuracy : ",accuracy_score(classifier.predict(X_test),y_test))
